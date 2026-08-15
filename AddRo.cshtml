@@ -1,0 +1,158 @@
+@model MsmePortal.Models.RoViewModel
+@{
+    ViewData["Title"] = "Add Regional Office (RO)";
+    var roList = ViewBag.RoList as List<MsmePortal.Models.RoViewModel> ?? new List<MsmePortal.Models.RoViewModel>();
+    var parentOffices = ViewBag.ParentHeadOffices as List<string> ?? new List<string> { "भोपाल मुख्य कार्यालय (Head Office)" };
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-primary mb-0">
+            <i class="bi bi-building-add me-2"></i> Add Regional Office (क्षेत्रीय कार्यालय जोड़ें)
+        </h3>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Standardized Form Card -->
+    <div class="card shadow-sm border-0 rounded-3 mb-5">
+        <div class="card-header bg-dark text-white fw-bold py-3 d-flex align-items-center justify-content-between">
+            <span><i class="bi bi-pencil-square me-2 text-warning"></i> RO (क्षेत्रीय कार्यालय) फ़ॉर्म</span>
+            <span class="badge bg-warning text-dark">Level: RO</span>
+        </div>
+        <div class="card-body p-4 bg-white">
+            <form asp-action="AddRo" method="post" id="roForm">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Parent Dropdown (RO parent = Head Office) -->
+                    <div class="col-md-12">
+                        <label asp-for="ParentOfficeName" class="form-label fw-bold text-primary">
+                            <i class="bi bi-diagram-3-fill me-1"></i> Parent Office (पैरेंट मुख्य कार्यालय) <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="ParentOfficeName" class="form-select border-primary bg-light fw-bold">
+                            @foreach (var parent in parentOffices)
+                            {
+                                <option value="@parent">@parent (Headquarters)</option>
+                            }
+                        </select>
+                        <small class="text-muted d-block mt-1">नोट: क्षेत्रीय कार्यालय (RO) सीधे मुख्य कार्यालय (HO) को रिपोर्ट करता है।</small>
+                    </div>
+
+                    <!-- 1. Name -->
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label fw-semibold">
+                            RO Name (क्षेत्रीय कार्यालय का नाम) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Name" class="form-control" placeholder="उदा. भोपाल क्षेत्रीय कार्यालय" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 2. Address -->
+                    <div class="col-md-6">
+                        <label asp-for="Address" class="form-label fw-semibold">
+                            Address (पता) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Address" class="form-control" placeholder="उदा. एम.पी. नगर जोन-1, भोपाल" />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 3. Contact -->
+                    <div class="col-md-6">
+                        <label asp-for="Contact" class="form-label fw-semibold">
+                            Contact (संपर्क नंबर) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Contact" class="form-control" placeholder="उदा. 0755-2551234" />
+                        <span asp-validation-for="Contact" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 4. Email ID -->
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold">
+                            Email ID (ईमेल आईडी) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="ro.bhopal@mpmsme.gov.in" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 5. GST No -->
+                    <div class="col-md-6">
+                        <label asp-for="GstNo" class="form-label fw-semibold">
+                            GST No (जीएसटी नंबर) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="GstNo" class="form-control text-uppercase" placeholder="उदा. 23AAAAA0000A1Z5" />
+                        <span asp-validation-for="GstNo" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 6. Password -->
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label fw-semibold">
+                            Password (पासवर्ड) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••••" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Form Action Buttons: Save, Clear, Close -->
+                <div class="d-flex align-items-center gap-3 mt-4 pt-3 border-top">
+                    <button type="submit" class="btn btn-success px-4 fw-bold">
+                        <i class="bi bi-check-circle-fill me-1"></i> Save (सहेजें)
+                    </button>
+                    <button type="button" class="btn btn-warning text-dark px-4 fw-bold" onclick="document.getElementById('roForm').reset();">
+                        <i class="bi bi-eraser-fill me-1"></i> Clear (साफ़ करें)
+                    </button>
+                    <a asp-action="Index" class="btn btn-danger px-4 fw-bold ms-auto">
+                        <i class="bi bi-x-circle-fill me-1"></i> Close (बंद करें)
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Table Listing Registered ROs -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-secondary text-white fw-bold py-3">
+            <i class="bi bi-table me-2"></i> पंजीकृत क्षेत्रीय कार्यालय सूची (Registered RO List)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>RO Code</th>
+                            <th>RO Name</th>
+                            <th>Parent Office</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>GST No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ro in roList)
+                        {
+                            <tr>
+                                <td>@ro.Id</td>
+                                <td><span class="badge bg-primary">@ro.Code</span></td>
+                                <td class="fw-bold">@ro.Name</td>
+                                <td><span class="badge bg-light text-primary border">@ro.ParentOfficeName</span></td>
+                                <td>@ro.Contact</td>
+                                <td>@ro.Email</td>
+                                <td><code>@ro.GstNo</code></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

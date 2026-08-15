@@ -1,0 +1,137 @@
+@{
+    ViewData["Title"] = "मुख्य कार्यालय (HO) डैशबोर्ड";
+}
+
+<div class="container mt-4">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Welcome Banner -->
+    <div class="p-4 mb-4 text-white rounded-3 shadow" style="background: linear-gradient(135deg, #091733 0%, #1c3d7a 100%); border-left: 6px solid #e5ab25;">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h2 class="fw-bold mb-1">मुख्य कार्यालय (HO) कंट्रोल पैनल</h2>
+                <p class="mb-0 text-light opacity-75">समस्त क्षेत्रीय कार्यालयों (RO), जिला केंद्रों (DTIC), अनुभागों (Sections) एवं उपयोगकर्ताओं (Users) का संपूर्ण प्रबंधन।</p>
+            </div>
+            <div class="col-md-3 text-end">
+                <span class="badge bg-warning text-dark fs-6 px-3 py-2 fw-bold">Role: HO Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Count Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 bg-white">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-muted fw-bold small">Total ROs</div>
+                        <div class="display-6 fw-bold text-primary">@ViewBag.RoCount</div>
+                    </div>
+                    <div class="bg-primary-subtle text-primary p-3 rounded-circle fs-3">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 bg-white">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-muted fw-bold small">Total DTICs</div>
+                        <div class="display-6 fw-bold text-info">@ViewBag.DticCount</div>
+                    </div>
+                    <div class="bg-info-subtle text-info p-3 rounded-circle fs-3">
+                        <i class="bi bi-bank"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 bg-white">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-muted fw-bold small">Sections</div>
+                        <div class="display-6 fw-bold text-success">@ViewBag.SectionCount</div>
+                    </div>
+                    <div class="bg-success-subtle text-success p-3 rounded-circle fs-3">
+                        <i class="bi bi-folder-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 bg-white">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-muted fw-bold small">Users</div>
+                        <div class="display-6 fw-bold text-warning">@ViewBag.UserCount</div>
+                    </div>
+                    <div class="bg-warning-subtle text-warning p-3 rounded-circle fs-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Quick Action Cards -->
+    <h4 class="fw-bold mb-3 text-secondary"><i class="bi bi-grid-fill me-2"></i> प्रबंधन अनुभाग (Management Navigation Options)</h4>
+    <div class="row g-4">
+        
+        <!-- Add RO Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-shadow transition">
+                <div class="card-body p-4 text-center">
+                    <div class="text-primary fs-1 mb-2"><i class="bi bi-building-add"></i></div>
+                    <h5 class="fw-bold">Add RO</h5>
+                    <p class="text-muted small">क्षेत्रीय कार्यालय (Regional Office) जोड़ें</p>
+                    <a asp-action="AddRo" class="btn btn-primary btn-sm px-4 fw-bold rounded-pill">फॉर्म खोलें</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add DTIC Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-shadow transition">
+                <div class="card-body p-4 text-center">
+                    <div class="text-info fs-1 mb-2"><i class="bi bi-bank2"></i></div>
+                    <h5 class="fw-bold">Add DTIC</h5>
+                    <p class="text-muted small">जिला उद्योग केंद्र (District Office) जोड़ें</p>
+                    <a asp-action="AddDtic" class="btn btn-info text-white btn-sm px-4 fw-bold rounded-pill">फॉर्म खोलें</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Section Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-shadow transition">
+                <div class="card-body p-4 text-center">
+                    <div class="text-success fs-1 mb-2"><i class="bi bi-folder-plus"></i></div>
+                    <h5 class="fw-bold">Add Section</h5>
+                    <p class="text-muted small">नया अनुभाग (Section) दर्ज करें</p>
+                    <a asp-action="AddSection" class="btn btn-success btn-sm px-4 fw-bold rounded-pill">फॉर्म खोलें</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add User Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-shadow transition">
+                <div class="card-body p-4 text-center">
+                    <div class="text-warning fs-1 mb-2"><i class="bi bi-person-plus-fill"></i></div>
+                    <h5 class="fw-bold">Add User</h5>
+                    <p class="text-muted small">नया उपयोगकर्ता (User) दर्ज करें</p>
+                    <a asp-action="AddUser" class="btn btn-warning text-dark btn-sm px-4 fw-bold rounded-pill">फॉर्म खोलें</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

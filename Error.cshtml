@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "त्रुटि (Error) | MSME पोर्टल";
+    var requestId = ViewBag.RequestId as string;
+}
+
+<div class="container text-center py-5">
+    <div class="card shadow-lg border-0 rounded-4 max-w-600 mx-auto p-4">
+        <div class="text-danger mb-3">
+            <i class="bi bi-exclamation-triangle-fill display-1"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-2">कुछ त्रुटि हुई है (An error occurred)</h2>
+        <p class="text-muted mb-4">अनुरोध को संसाधित करते समय एक समस्या आई। कृपया पृष्ठ को पुनः लोड करें या होमपेज पर जाएं।</p>
+        
+        @if (!string.IsNullOrEmpty(requestId))
+        {
+            <div class="p-2 bg-light rounded text-monospace mb-4 border">
+                <small class="text-secondary">Request ID: <code>@requestId</code></small>
+            </div>
+        }
+
+        <div>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-warning fw-bold px-4 rounded-pill">
+                <i class="bi bi-house-door-fill me-1"></i> लॉगिन पृष्ठ पर जाएं (Go to Login)
+            </a>
+        </div>
+    </div>
+</div>

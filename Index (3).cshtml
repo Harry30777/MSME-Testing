@@ -1,0 +1,170 @@
+@{
+    ViewData["Title"] = "क्षेत्रीय कार्यालय (RO) डैशबोर्ड";
+    var assignedOffice = ViewBag.AssignedOffice as string ?? "भोपाल क्षेत्रीय कार्यालय";
+    var dtics = ViewBag.Dtics as List<MsmePortal.Models.DticViewModel> ?? new List<MsmePortal.Models.DticViewModel>();
+    var users = ViewBag.Users as List<MsmePortal.Models.UserViewModel> ?? new List<MsmePortal.Models.UserViewModel>();
+    var inspections = ViewBag.Inspections as List<MsmePortal.Models.RegionalInspectionModel> ?? new List<MsmePortal.Models.RegionalInspectionModel>();
+}
+
+<div class="container-fluid">
+    <!-- RO Banner -->
+    <div class="p-4 mb-4 text-white rounded-3 shadow" style="background: linear-gradient(135deg, #091733 0%, #152d5b 100%); border-left: 6px solid #e5ab25;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-building me-2 text-warning"></i> @assignedOffice (क्षेत्रीय कंट्रोल पैनल)</h2>
+                <p class="mb-0 text-light opacity-75">क्षेत्र के अंतर्गत आने वाले जिला कार्यालयों, उद्योगों का भौतिक सत्यापन एवं सब्सिडी निरीक्षण।</p>
+            </div>
+            <span class="badge bg-warning text-dark fs-6 px-3 py-2 fw-bold">Scope: Regional Office</span>
+        </div>
+    </div>
+
+    <!-- Nav Tabs for RO Internal Modules -->
+    <ul class="nav nav-tabs nav-fill mb-4 border-bottom border-primary" id="roTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold" id="dtic-tab" data-bs-toggle="tab" data-bs-target="#dtic-pane" type="button" role="tab">
+                <i class="bi bi-bank me-2 text-info"></i> 1. संबद्ध DTIC कार्यालय (@dtics.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-success" id="insp-tab" data-bs-toggle="tab" data-bs-target="#insp-pane" type="button" role="tab">
+                <i class="bi bi-shield-check me-2"></i> 2. औद्योगिक भौतिक सत्यापन व सब्सिडी जांच (@inspections.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-warning" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff-pane" type="button" role="tab">
+                <i class="bi bi-people me-2"></i> 3. क्षेत्र के अधिकारी व कर्मचारी (@users.Count)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="roTabContent">
+        
+        <!-- Tab 1: DTIC List -->
+        <div class="tab-pane fade show active" id="dtic-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-dark text-white fw-bold py-3">
+                    <i class="bi bi-bank me-2 text-info"></i> क्षेत्र के अधीनस्थ जिला व्यापार एवं उद्योग केंद्र (Assigned DTIC Offices)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>DTIC Code</th>
+                                    <th>DTIC Office Name</th>
+                                    <th>Contact</th>
+                                    <th>Email ID</th>
+                                    <th>Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var d in dtics)
+                                {
+                                    <tr>
+                                        <td>@d.Id</td>
+                                        <td><span class="badge bg-info text-dark">@d.Code</span></td>
+                                        <td class="fw-bold">@d.Name</td>
+                                        <td>@d.Contact</td>
+                                        <td>@d.Email</td>
+                                        <td class="small text-muted">@d.Address</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Regional Unit Inspections -->
+        <div class="tab-pane fade" id="insp-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-success text-white fw-bold py-3">
+                    <i class="bi bi-file-earmark-check me-2"></i> औद्योगिक इकाई भौतिक सत्यापन एवं सब्सिडी अनुदान जांच (Industrial Inspection Module)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Inspection Code</th>
+                                    <th>Industrial Unit Name</th>
+                                    <th>DTIC District</th>
+                                    <th>Inspector Officer</th>
+                                    <th>Verified Grant</th>
+                                    <th>Inspection Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var insp in inspections)
+                                {
+                                    <tr>
+                                        <td>@insp.Id</td>
+                                        <td><span class="badge bg-secondary">@insp.InspectionCode</span></td>
+                                        <td class="fw-bold">@insp.UnitName</td>
+                                        <td><span class="badge bg-light text-dark border">@insp.DticName</span></td>
+                                        <td>@insp.InspectorOfficer</td>
+                                        <td class="fw-bold text-success">₹@insp.VerifiedGrantAmount.ToString("N0")</td>
+                                        <td>
+                                            @if (insp.Status.Contains("Passed"))
+                                            {
+                                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> @insp.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i> @insp.Status</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Regional Officers & Staff -->
+        <div class="tab-pane fade" id="staff-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-warning text-dark fw-bold py-3">
+                    <i class="bi bi-people-fill me-2"></i> क्षेत्रीय कार्यालय व संबंधित जिला अधिकारी (Regional & District Officers)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Code</th>
+                                    <th>Officer Name</th>
+                                    <th>Role</th>
+                                    <th>Assigned Office</th>
+                                    <th>Contact</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in users)
+                                {
+                                    <tr>
+                                        <td>@u.Id</td>
+                                        <td><span class="badge bg-warning text-dark">@u.Code</span></td>
+                                        <td class="fw-bold">@u.Name</td>
+                                        <td><span class="badge bg-primary">@u.Role</span></td>
+                                        <td><span class="badge bg-light text-dark border">@u.AssignedOfficeName</span></td>
+                                        <td>@u.Contact</td>
+                                        <td>@u.Email</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,646 @@
+@{
+    var userRole = Context.Session.GetString("UserRole") ?? "HO_User";
+    var userName = Context.Session.GetString("UserName") ?? "भोपाल मुख्य कार्यालय प्रशासक (HO Admin)";
+    var assignedOffice = Context.Session.GetString("AssignedOffice") ?? "भोपाल मुख्य कार्यालय";
+}
+<!DOCTYPE html>
+<html lang="hi" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MSME पोर्टल (मध्यप्रदेश सरकार)</title>
+
+    <!-- FOUC Prevention Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('msme-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" />
+
+    <style>
+        /* Light Theme Tokens */
+        :root, html[data-theme="light"] {
+            --sidebar-width: 275px;
+            --bg-canvas: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted-custom: #64748b;
+            --topbar-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --sidebar-bg: #091733;
+            --sidebar-hover: #162c5b;
+            --gold-accent: #d99a18;
+            --input-bg: #ffffff;
+            --input-text: #1e293b;
+            --table-header-bg: #1e293b;
+            --table-header-text: #ffffff;
+        }
+
+        /* Dark Theme Tokens */
+        html[data-theme="dark"] {
+            --bg-canvas: #0b1329;
+            --card-bg: #112240;
+            --text-main: #f8fafc;
+            --text-muted-custom: #94a3b8;
+            --topbar-bg: #0d1b38;
+            --border-color: #243b66;
+            --sidebar-bg: #071026;
+            --sidebar-hover: #172a4e;
+            --gold-accent: #f5bc36;
+            --input-bg: #1a3258;
+            --input-text: #ffffff;
+            --table-header-bg: #07122e;
+            --table-header-text: #f5bc36;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Global Dynamic Text Visibility Overrides */
+        h1, h2, h3, h4, h5, h6, p, span, label, div, td, th {
+            transition: color 0.3s ease;
+        }
+
+        /* Light Mode Yellow Box & Label Visibility */
+        html[data-theme="light"] .bg-warning-subtle {
+            background-color: #fff9e6 !important;
+            border-color: #f3d082 !important;
+            color: #1e293b !important;
+        }
+        html[data-theme="light"] .bg-warning-subtle label,
+        html[data-theme="light"] .bg-warning-subtle small {
+            color: #0f172a !important;
+        }
+
+        /* Dark Mode Yellow Box & Label Visibility */
+        html[data-theme="dark"] .bg-warning-subtle {
+            background-color: #1c325c !important;
+            border-color: #f5bc36 !important;
+            color: #ffffff !important;
+        }
+        html[data-theme="dark"] .bg-warning-subtle label {
+            color: #f5bc36 !important; /* Gold Label in Dark Mode for High Contrast */
+            font-weight: 700 !important;
+        }
+        html[data-theme="dark"] .bg-warning-subtle small {
+            color: #cbd5e1 !important;
+        }
+
+        /* Dark Mode Global Text Overrides */
+        html[data-theme="dark"] .text-dark {
+            color: #f8fafc !important;
+        }
+
+        /* Ensure elements with bright yellow/cyan backgrounds retain high-contrast dark text in both Light & Dark themes */
+        .btn-warning,
+        .btn-info,
+        .btn-light,
+        .badge.bg-warning,
+        .badge.bg-info,
+        .card-header.bg-warning,
+        html[data-theme="dark"] .btn-warning,
+        html[data-theme="dark"] .btn-info,
+        html[data-theme="dark"] .btn-light,
+        html[data-theme="dark"] .badge.bg-warning,
+        html[data-theme="dark"] .badge.bg-info,
+        html[data-theme="dark"] .card-header.bg-warning {
+            color: #0f172a !important;
+        }
+
+        .btn-warning *,
+        .btn-info *,
+        .btn-light *,
+        .badge.bg-warning *,
+        .badge.bg-info *,
+        .card-header.bg-warning *,
+        html[data-theme="dark"] .btn-warning *,
+        html[data-theme="dark"] .btn-info *,
+        html[data-theme="dark"] .btn-light *,
+        html[data-theme="dark"] .badge.bg-warning *,
+        html[data-theme="dark"] .badge.bg-info *,
+        html[data-theme="dark"] .card-header.bg-warning * {
+            color: #0f172a !important;
+        }
+
+        html[data-theme="dark"] .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        html[data-theme="dark"] .text-secondary {
+            color: #cbd5e1 !important;
+        }
+
+        html[data-theme="dark"] .text-primary {
+            color: #60a5fa !important;
+        }
+
+        html[data-theme="dark"] .text-warning {
+            color: #f5bc36 !important;
+        }
+
+        html[data-theme="dark"] .text-success {
+            color: #34d399 !important;
+        }
+
+        html[data-theme="dark"] .bg-white, 
+        html[data-theme="dark"] .bg-light {
+            background-color: #162a4d !important;
+            color: #f8fafc !important;
+        }
+
+        /* Card and Container Styling */
+        .card {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .card-header {
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .card-header.bg-light {
+            background-color: #1a3258 !important;
+            color: #f8fafc !important;
+        }
+
+        /* Form Controls & Dropdown Options */
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] select option {
+            background-color: #0f1c3f !important;
+            color: #ffffff !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted-custom);
+            opacity: 0.8;
+        }
+
+        label.form-label, .form-check-label {
+            color: var(--text-main) !important;
+        }
+
+        /* Table Theme Visibility */
+        .table {
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: #f8fafc !important;
+        }
+
+        html[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+            background-color: rgba(245, 188, 54, 0.12) !important;
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .table-light {
+            background-color: #1a3258 !important;
+            color: #f8fafc !important;
+        }
+
+        /* Badges & Alerts in Dark Mode */
+        html[data-theme="dark"] .badge.bg-light {
+            background-color: #1e3a67 !important;
+            color: #f8fafc !important;
+            border: 1px solid #2c4875 !important;
+        }
+
+        html[data-theme="dark"] .badge.bg-secondary {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+
+        html[data-theme="dark"] .alert-success {
+            background-color: #064e3b !important;
+            color: #a7f3d0 !important;
+            border-color: #047857 !important;
+        }
+
+        html[data-theme="dark"] .alert-warning {
+            background-color: #78350f !important;
+            color: #fef3c7 !important;
+            border-color: #b45309 !important;
+        }
+
+        /* Nav Tabs in Dark Mode */
+        html[data-theme="dark"] .nav-tabs {
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .nav-tabs .nav-link {
+            color: #cbd5e1 !important;
+        }
+
+        html[data-theme="dark"] .nav-tabs .nav-link.active {
+            background-color: #112240 !important;
+            color: #f5bc36 !important;
+            border-color: var(--border-color) var(--border-color) #112240 !important;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0e2246 100%);
+            border-right: 3px solid var(--gold-accent);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            padding: 22px 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-brand img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-accent);
+            background: #ffffff;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .sidebar-brand .govt-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .sidebar-brand .sub-name {
+            font-size: 0.78rem;
+            color: var(--gold-accent);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            padding: 16px 12px;
+            list-style: none;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-heading {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8da4d0;
+            padding: 12px 14px 6px 14px;
+            font-weight: 700;
+        }
+
+        .nav-item-sidebar {
+            margin-bottom: 4px;
+        }
+
+        .nav-link-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 16px;
+            color: #d1e0fc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.93rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link-sidebar i {
+            font-size: 1.15rem;
+            color: var(--gold-accent);
+        }
+
+        .nav-link-sidebar:hover {
+            background-color: var(--sidebar-hover);
+            color: #ffffff;
+            transform: translateX(3px);
+        }
+
+        .nav-link-sidebar.active {
+            background-color: var(--sidebar-hover);
+            color: var(--gold-accent);
+            font-weight: 700;
+            border-left: 4px solid var(--gold-accent);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 26px;
+            margin-top: 4px;
+        }
+
+        .submenu .nav-link-sidebar {
+            padding: 9px 14px;
+            font-size: 0.88rem;
+            color: #b0c7ee;
+        }
+
+        .submenu .nav-link-sidebar:hover {
+            color: var(--gold-accent);
+        }
+
+        /* Main Layout Wrapper */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        /* Topbar Styling */
+        .topbar {
+            background: var(--topbar-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            transition: background-color 0.3s ease;
+        }
+
+        .role-badge {
+            background: #091733;
+            color: var(--gold-accent);
+            border: 1px solid var(--gold-accent);
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.84rem;
+        }
+
+        .office-badge {
+            background: rgba(229, 171, 37, 0.12);
+            color: var(--gold-accent);
+            border: 1px solid var(--gold-accent);
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+        }
+
+        /* Main Footer */
+        footer.main-footer {
+            margin-top: auto;
+            background: #091733;
+            color: #a0aec0;
+            padding: 14px;
+            text-align: center;
+            font-size: 0.85rem;
+            border-top: 2px solid var(--gold-accent);
+        }
+
+        @@media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebarNav">
+        <div class="sidebar-brand">
+            <img src="~/images/msme_logo.jpg" alt="MSME Logo" />
+            <div class="govt-name">मध्यप्रदेश सरकार</div>
+            <div class="sub-name">MSME पोर्टल (उद्योग संचालनालय)</div>
+        </div>
+
+        <ul class="sidebar-menu">
+            
+            @if (userRole == "HO_User")
+            {
+                <li class="sidebar-heading">HO मुख्य पैनल (Head Office Scope)</li>
+
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Ho" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>HO डैशबोर्ड (Control Panel)</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">प्रशासनिक अनुभाग (Administration)</li>
+
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar text-warning fw-bold d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#mgmtMenu" role="button" aria-expanded="true" aria-controls="mgmtMenu">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>प्रबंधन (Management)</span>
+                        </div>
+                        <i class="bi bi-chevron-down fs-7"></i>
+                    </a>
+                    <div class="collapse show" id="mgmtMenu">
+                        <ul class="submenu">
+                            <li class="nav-item-sidebar">
+                                <a class="nav-link-sidebar @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddRo" ? "active" : "")" asp-controller="Ho" asp-action="AddRo">
+                                    <i class="bi bi-building-add"></i>
+                                    <span>Add RO (क्षेत्रीय कार्यालय)</span>
+                                </a>
+                            </li>
+                            <li class="nav-item-sidebar">
+                                <a class="nav-link-sidebar @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddDtic" ? "active" : "")" asp-controller="Ho" asp-action="AddDtic">
+                                    <i class="bi bi-bank"></i>
+                                    <span>Add DTIC (जिला केंद्र)</span>
+                                </a>
+                            </li>
+                            <li class="nav-item-sidebar">
+                                <a class="nav-link-sidebar @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddSection" ? "active" : "")" asp-controller="Ho" asp-action="AddSection">
+                                    <i class="bi bi-folder-plus"></i>
+                                    <span>Add Section (अनुभाग)</span>
+                                </a>
+                            </li>
+                            <li class="nav-item-sidebar">
+                                <a class="nav-link-sidebar @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddUser" ? "active" : "")" asp-controller="Ho" asp-action="AddUser">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    <span>Add User (उपयोगकर्ता)</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            }
+            else if (userRole == "RO_User")
+            {
+                <li class="sidebar-heading">RO क्षेत्रीय पैनल (Regional Scope)</li>
+
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar active" asp-controller="Ro" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>क्षेत्रीय डैशबोर्ड (RO Dashboard)</span>
+                    </a>
+                </li>
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar" asp-controller="Ro" asp-action="Index">
+                        <i class="bi bi-bank"></i>
+                        <span>संबद्ध DTIC (My DTICs)</span>
+                    </a>
+                </li>
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar" asp-controller="Ro" asp-action="Index">
+                        <i class="bi bi-people"></i>
+                        <span>क्षेत्रीय अधिकारी व कर्मचारी</span>
+                    </a>
+                </li>
+            }
+            else if (userRole == "DTIC_User")
+            {
+                <li class="sidebar-heading">DTIC जिला पैनल (District Scope)</li>
+
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar active" asp-controller="Dtic" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>जिला डैशबोर्ड (DTIC Dashboard)</span>
+                    </a>
+                </li>
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar" asp-controller="Dtic" asp-action="Index">
+                        <i class="bi bi-people-fill"></i>
+                        <span>जिले के पंजीकृत आवेदक</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="sidebar-heading">आवेदक पोर्टल (General Scope)</li>
+
+                <li class="nav-item-sidebar">
+                    <a class="nav-link-sidebar active" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-person-badge"></i>
+                        <span>मेरा प्रोफ़ाइल व आवेदन</span>
+                    </a>
+                </li>
+            }
+
+        </ul>
+
+        <div class="p-3 text-center border-top border-secondary border-opacity-25">
+            <small class="text-warning fw-bold d-block">Scope: @userRole</small>
+            <small class="text-light opacity-75 d-block">© 2026 MP MSME Dept.</small>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-outline-secondary d-lg-none" type="button" onclick="document.getElementById('sidebarNav').classList.toggle('show')">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <div>
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-shield-check me-1 text-warning"></i> @(ViewData["Title"] ?? "MSME Dashboard")
+                    </h5>
+                    <small class="text-muted"><i class="bi bi-person-circle me-1"></i> @userName</small>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Theme Switcher Button -->
+                <button id="themeToggleBtn" type="button" class="btn btn-outline-warning btn-sm rounded-pill px-3 fw-bold">
+                    <i class="bi bi-moon-stars-fill me-1" id="themeIcon"></i>
+                    <span id="themeText">डार्क मोड</span>
+                </button>
+
+                <span class="office-badge ms-2">
+                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i> @assignedOffice
+                </span>
+                <span class="role-badge">
+                    <i class="bi bi-shield-lock-fill me-1"></i> @userRole
+                </span>
+                <a class="btn btn-outline-danger btn-sm px-3 fw-bold rounded-pill" asp-controller="Account" asp-action="Logout">
+                    <i class="bi bi-box-arrow-right me-1"></i> लॉग आउट
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="p-4">
+            @RenderBody()
+        </main>
+
+        <footer class="main-footer">
+            <div class="container-fluid">
+                <span>सूक्ष्म, लघु और मध्यम उद्यम विभाग (उद्योग संचालनालय, मध्यप्रदेश सरकार) © 2026 सर्वाधिकार सुरक्षित</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JS Scripts & Theme Toggle Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            function updateUI(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'bi bi-sun-fill me-1 text-warning';
+                    themeText.textContent = 'लाइट मोड';
+                } else {
+                    themeIcon.className = 'bi bi-moon-stars-fill me-1';
+                    themeText.textContent = 'डार्क मोड';
+                }
+            }
+
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            updateUI(currentTheme);
+
+            if (themeBtn) {
+                themeBtn.addEventListener('click', function () {
+                    const activeTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', activeTheme);
+                    localStorage.setItem('msme-theme', activeTheme);
+                    updateUI(activeTheme);
+                });
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,162 @@
+@{
+    ViewData["Title"] = "जिला उद्योग केंद्र (DTIC) डैशबोर्ड";
+    var assignedOffice = ViewBag.AssignedOffice as string ?? "भोपाल DTIC कार्यालय";
+    var users = ViewBag.Users as List<MsmePortal.Models.UserViewModel> ?? new List<MsmePortal.Models.UserViewModel>();
+    var applications = ViewBag.Applications as List<MsmePortal.Models.DistrictApplicationModel> ?? new List<MsmePortal.Models.DistrictApplicationModel>();
+}
+
+<div class="container-fluid">
+    <!-- DTIC Banner -->
+    <div class="p-4 mb-4 text-white rounded-3 shadow" style="background: linear-gradient(135deg, #091733 0%, #152d5b 100%); border-left: 6px solid #e5ab25;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-bank2 me-2 text-warning"></i> @assignedOffice (जिला कंट्रोल पैनल)</h2>
+                <p class="mb-0 text-light opacity-75">जिले के उद्यमियों के ऋण, सब्सिडी आवेदन, उद्योग स्वीकृति एवं सिंगल विंडो एनओसी प्रबंधन।</p>
+            </div>
+            <span class="badge bg-info text-dark fs-6 px-3 py-2 fw-bold">Scope: District DTIC</span>
+        </div>
+    </div>
+
+    <!-- Nav Tabs for DTIC Internal Modules -->
+    <ul class="nav nav-tabs nav-fill mb-4 border-bottom border-info" id="dticTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold text-primary" id="app-tab" data-bs-toggle="tab" data-bs-target="#app-pane" type="button" role="tab">
+                <i class="bi bi-journal-check me-2"></i> 1. उद्यमी ऋण व सब्सिडी आवेदन (@applications.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-success" id="noc-tab" data-bs-toggle="tab" data-bs-target="#noc-pane" type="button" role="tab">
+                <i class="bi bi-patch-check me-2"></i> 2. औद्योगिक भूमि आवंटन व एनओसी (Clearances)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-warning" id="user-tab" data-bs-toggle="tab" data-bs-target="#user-pane" type="button" role="tab">
+                <i class="bi bi-people me-2"></i> 3. जिले के पंजीकृत आवेदक व कर्मचारी (@users.Count)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="dticTabContent">
+
+        <!-- Tab 1: Loan & Subsidy Applications -->
+        <div class="tab-pane fade show active" id="app-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white fw-bold py-3">
+                    <i class="bi bi-card-checklist me-2"></i> जिला स्तरीय उद्यमी ऋण व सब्सिडी आवेदन पत्र (PMEGP व उद्यम क्रांति)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Application No</th>
+                                    <th>Applicant Name</th>
+                                    <th>Yojana / Scheme</th>
+                                    <th>Loan Amount</th>
+                                    <th>Applied Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var app in applications)
+                                {
+                                    <tr>
+                                        <td>@app.Id</td>
+                                        <td><span class="badge bg-secondary">@app.ApplicationNo</span></td>
+                                        <td class="fw-bold">@app.ApplicantName</td>
+                                        <td><span class="badge bg-light text-primary border">@app.SchemeName</span></td>
+                                        <td class="fw-bold text-primary">₹@app.LoanAmount.ToString("N0")</td>
+                                        <td class="small text-muted">@app.AppliedDate.ToString("dd-MM-yyyy")</td>
+                                        <td>
+                                            @if (app.Status.Contains("Disbursed") || app.Status.Contains("संवितरित"))
+                                            {
+                                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> @app.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> @app.Status</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Single Window NOC & Land Tracker -->
+        <div class="tab-pane fade" id="noc-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-success text-white fw-bold py-3">
+                    <i class="bi bi-building-gear me-2"></i> सिंगल विंडो क्लीयरेंस व भूमि आवंटन एनओसी मॉड्यूल
+                </div>
+                <div class="card-body p-4 bg-white">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-light text-center">
+                                <h4 class="text-success fw-bold mb-1">12</h4>
+                                <div class="text-muted small">औद्योगिक भूमि आवंटन (Allotted Plots)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-light text-center">
+                                <h4 class="text-primary fw-bold mb-1">28</h4>
+                                <div class="text-muted small">सिंगल विंडो NOC जारी (Issued Clearances)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-light text-center">
+                                <h4 class="text-warning fw-bold mb-1">4</h4>
+                                <div class="text-muted small">समीक्षाधीन आवेदन (Pending NOCs)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: District Users -->
+        <div class="tab-pane fade" id="user-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-warning text-dark fw-bold py-3">
+                    <i class="bi bi-people-fill me-2"></i> जिले के पंजीकृत आवेदक व कर्मचारी
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>User Code</th>
+                                    <th>Applicant Name</th>
+                                    <th>Role</th>
+                                    <th>Assigned Office</th>
+                                    <th>Contact</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in users)
+                                {
+                                    <tr>
+                                        <td>@u.Id</td>
+                                        <td><span class="badge bg-warning text-dark">@u.Code</span></td>
+                                        <td class="fw-bold">@u.Name</td>
+                                        <td><span class="badge bg-primary">@u.Role</span></td>
+                                        <td><span class="badge bg-light text-dark border">@u.AssignedOfficeName</span></td>
+                                        <td>@u.Contact</td>
+                                        <td>@u.Email</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

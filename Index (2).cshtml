@@ -1,0 +1,194 @@
+@{
+    ViewData["Title"] = "आवेदक पोर्टल - MSME मध्यप्रदेश";
+    var userName = ViewBag.UserName as string ?? "सामान्य आवेदक (General User)";
+    var applications = ViewBag.Applications as List<MsmePortal.Models.DistrictApplicationModel> ?? new List<MsmePortal.Models.DistrictApplicationModel>();
+    var dticList = ViewBag.Dtics as List<MsmePortal.Models.DticViewModel> ?? new List<MsmePortal.Models.DticViewModel>();
+}
+
+<div class="container-fluid">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Applicant Banner -->
+    <div class="p-4 mb-4 text-white rounded-3 shadow" style="background: linear-gradient(135deg, #091733 0%, #1c3d7a 100%); border-left: 6px solid #e5ab25;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-person-workspace me-2 text-warning"></i> स्वागत है, @userName</h2>
+                <p class="mb-0 text-light opacity-75">मध्यप्रदेश शासन MSME योजना सब्सिडी, उद्यम ऋण पोर्टल एवं नया उद्योग सहायता केंद्र।</p>
+            </div>
+            <span class="badge bg-warning text-dark fs-6 px-3 py-2 fw-bold">Applicant Dashboard</span>
+        </div>
+    </div>
+
+    <!-- Nav Tabs for Applicant Modules -->
+    <ul class="nav nav-tabs nav-fill mb-4 border-bottom border-primary" id="userTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold text-primary" id="myapps-tab" data-bs-toggle="tab" data-bs-target="#myapps-pane" type="button" role="tab">
+                <i class="bi bi-journal-bookmark-fill me-2"></i> 1. मेरे योजना आवेदन (@applications.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-success" id="apply-tab" data-bs-toggle="tab" data-bs-target="#apply-pane" type="button" role="tab">
+                <i class="bi bi-file-earmark-plus-fill me-2"></i> 2. नया योजना आवेदन करें (New Scheme Application)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-warning" id="udyam-tab" data-bs-toggle="tab" data-bs-target="#udyam-pane" type="button" role="tab">
+                <i class="bi bi-patch-check-fill me-2"></i> 3. मेरा उद्यम पंजीकरण प्रोफाइल (Udyam Profile)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="userTabContent">
+
+        <!-- Tab 1: My Applications Tracker -->
+        <div class="tab-pane fade show active" id="myapps-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-dark text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-list-check me-2 text-warning"></i> प्रस्तुत आवेदन स्थिति (Submitted Applications Tracker)</span>
+                    <span class="badge bg-warning text-dark">कुल: @applications.Count</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Application No</th>
+                                    <th>Yojana / Scheme Name</th>
+                                    <th>Assigned DTIC Office</th>
+                                    <th>Required Loan / Grant</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var app in applications)
+                                {
+                                    <tr>
+                                        <td>@app.Id</td>
+                                        <td><span class="badge bg-secondary">@app.ApplicationNo</span></td>
+                                        <td class="fw-bold">@app.SchemeName</td>
+                                        <td><span class="badge bg-light text-dark border">@app.DistrictName</span></td>
+                                        <td class="fw-bold text-success">₹@app.LoanAmount.ToString("N0")</td>
+                                        <td class="small text-muted">@app.AppliedDate.ToString("dd-MM-yyyy")</td>
+                                        <td>
+                                            @if (app.Status.Contains("Disbursed") || app.Status.Contains("संवितरित"))
+                                            {
+                                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> @app.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> @app.Status</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Apply for New Scheme Form -->
+        <div class="tab-pane fade" id="apply-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-success text-white fw-bold py-3">
+                    <i class="bi bi-plus-circle-fill me-2"></i> नया MSME योजना एवं ऋण सब्सिडी आवेदन (Scheme Application Form)
+                </div>
+                <div class="card-body p-4 bg-white">
+                    <form asp-action="ApplyScheme" method="post" id="schemeForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <!-- Scheme Selection -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">योजना का चयन करें (Select Scheme) <span class="text-danger">*</span></label>
+                                <select name="SchemeName" class="form-select border-success fw-bold" required>
+                                    <option value="मुख्यमंत्री उद्यम क्रांति योजना">मुख्यमंत्री उद्यम क्रांति योजना (Mukhyamantri Udhyam Kranti)</option>
+                                    <option value="PMEGP ऋण सब्सिडी योजना">PMEGP ऋण सब्सिडी योजना (PMEGP Scheme)</option>
+                                    <option value="MSME क्लस्टर प्रोत्साहन योजना">MSME क्लस्टर प्रोत्साहन योजना (Cluster Incentive)</option>
+                                </select>
+                            </div>
+
+                            <!-- Target District DTIC Selection -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">संबंधित जिला उद्योग केंद्र (Target DTIC) <span class="text-danger">*</span></label>
+                                <select name="DistrictName" class="form-select border-success fw-bold" required>
+                                    @foreach (var dtic in dticList)
+                                    {
+                                        <option value="@dtic.Name">@dtic.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- Loan Amount -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">प्रस्तावित परियोजना लागत / ऋण राशि (₹) <span class="text-danger">*</span></label>
+                                <input type="number" name="LoanAmount" class="form-control" placeholder="उदा. 2500000" required />
+                            </div>
+
+                            <!-- Enterprise Type -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">उद्योग श्रेणी (MSME Category)</label>
+                                <select class="form-select">
+                                    <option>सूक्ष्म उद्योग (Micro Enterprise)</option>
+                                    <option>लघु उद्योग (Small Enterprise)</option>
+                                    <option>मध्यम उद्योग (Medium Enterprise)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-success px-4 fw-bold">
+                                <i class="bi bi-send-fill me-1"></i> आवेदन जमा करें (Submit Application)
+                            </button>
+                            <button type="button" class="btn btn-warning text-dark px-4 fw-bold" onclick="document.getElementById('schemeForm').reset();">
+                                <i class="bi bi-eraser-fill me-1"></i> साफ़ करें (Reset)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Udyam Profile -->
+        <div class="tab-pane fade" id="udyam-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-dark text-white fw-bold py-3">
+                    <i class="bi bi-patch-check me-2 text-warning"></i> उद्यम पंजीकरण व उद्यमी प्रोफाइल (My Udyam Enterprise Details)
+                </div>
+                <div class="card-body p-4 bg-white">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <small class="text-muted d-block">उद्यम पंजीकरण संख्या</small>
+                                <strong class="text-primary fs-6">UDYAM-MP-03-0012984</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <small class="text-muted d-block">इकाई का नाम</small>
+                                <strong class="fs-6">मध्यप्रदेश मैन्युफैक्चरिंग सॉल्यूशंस</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <small class="text-muted d-block">संबंधित जिला उद्योग केंद्र</small>
+                                <strong class="text-success fs-6">भोपाल DTIC कार्यालय</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

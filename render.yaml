@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: msme-portal
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
