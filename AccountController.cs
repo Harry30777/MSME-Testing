@@ -20,7 +20,7 @@ namespace MsmePortal.Controllers
         public IActionResult Login(string? next = null)
         {
             ViewBag.NextUrl = next;
-            return View("Login", new LoginViewModel());
+            return View("~/Views/Account/Login.cshtml", new LoginViewModel());
         }
 
         [HttpPost]
@@ -32,7 +32,7 @@ namespace MsmePortal.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Login", model);
+                return View("~/Views/Account/Login.cshtml", model);
             }
 
             var auth = _dataStore.Authenticate(model.LoginId.Trim(), model.Password.Trim());
@@ -61,7 +61,7 @@ namespace MsmePortal.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "अमान्य लॉगिन आईडी या पासवर्ड। (Invalid Login ID or Password)");
-            return View("Login", model);
+            return View("~/Views/Account/Login.cshtml", model);
         }
 
         [HttpGet]
